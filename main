@@ -1,0 +1,855 @@
+#include "delay.h"
+#include "sys.h"
+#include "oled.h"
+#include "bmp.h"
+#include "key.h"
+#include "beep.h"
+#include "rtc.h"
+#include "stm32f10x_bkp.h"
+#include "usart2.h"
+u8 t=0;
+u8 sure_wendukandianya_flag=0;
+u8 sure_dianyakanwendu_flag=0;
+u8 sure_xiugaishijian_flag=0;
+u8 sure_gaishijianwancheng_flag=0;
+u8 wendu_dianyadaoshijian_flag=0;
+u8 wendu_shijiandaodianya_flag=0;
+u8 xiugainianfen_flag=0;
+u8 xiugaiyuefen_flag=0;
+u8 xiugairiqi_flag=0;
+u8 xiugaishizhong_flag=0;
+u8 xiugaifenzhong_flag=0;
+u8 xiugaimiao_flag=0;
+u8 jieshouwendu_flag=0;
+u8 jieshoudianya_flag=0;
+u8 a='-',b='-',c='-',d='-',e='-',f='-',g='-',h='-',i='-',j='-',k='-',l='-',m='4',n='2',x='4',y='2',o='4',p='2',q='4',r='2';
+	
+void xianshiriqi() 
+{
+			if(t!=calendar.sec)
+		{
+			POINT_COLOR=WHITE;
+		BACK_COLOR=BLACK;
+			t=calendar.sec;
+			LCD_ShowxNum(79,207,calendar.w_month,2,16,0x80);
+			LCD_ShowChinese32x32(100,207,12,16,WHITE); //ÔÂ
+			//LCD_ShowNum2(120,207,calendar.w_date,2,16);	
+     LCD_ShowxNum(120,207,calendar.w_date,2,16,0x80);			
+			switch(calendar.week)
+			{
+				case 0:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,10,16,WHITE);
+					break;
+				case 1:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,4,16,WHITE);
+					break;
+				case 2:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,5,16,WHITE);
+					break;
+				case 3:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,6,16,WHITE);
+					break;
+				case 4:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,7,16,WHITE);
+					break;
+				case 5:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,8,16,WHITE);
+					break;
+				case 6:
+					LCD_ShowChinese32x32(33,207,11,16,WHITE);
+			    LCD_ShowChinese32x32(53,207,9,16,WHITE);
+					break;  
+			}
+			POINT_COLOR=GBLUE ;			
+			LCD_ShowChar2(59,170,':',24,0);
+			LCD_ShowChar2(99,170,':',24,0);
+//			LCD_ShowNum2(33,170,calendar.hour,2,24);
+//			LCD_ShowNum2(73,170,calendar.min,2,24);
+//			LCD_ShowNum2(115,170,calendar.sec,2,24);
+			LCD_ShowxNum(33,170,calendar.hour,2,24,0x80);		
+      LCD_ShowxNum(73,170,calendar.min,2,24,0x80);			
+      LCD_ShowxNum(115,170,calendar.sec,2,24,0x80);	
+      POINT_COLOR=WHITE;					
+		}		
+}
+void xiugaishizhong_gainianfen()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÄê·Ý
+{
+	xiugaiyuefen_flag=0;
+	xiugaimiao_flag=0;
+	jieshouwendu_flag = 0;
+	jieshoudianya_flag = 0;
+	sure_xiugaishijian_flag=0;
+  sure_wendukandianya_flag=0;
+  sure_dianyakanwendu_flag=0;
+  wendu_dianyadaoshijian_flag=0;
+  wendu_shijiandaodianya_flag=0;
+	
+	//BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;	
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+
+ 	LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);
+//	LCD_ShowNum2(194,60,calendar.w_date,2,24);	
+  LCD_ShowxNum(201,60,calendar.w_date,2,24,0x80);	  
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);		
+	LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+  LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+  LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);	
+	POINT_COLOR=GBLUE;
+	//LCD_ShowNum2(60,60,calendar.w_year,4,24);
+   LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+	xiugainianfen_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+void xiugaishizhong_gaiyuefen()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÔÂ·Ý
+{
+	xiugainianfen_flag=0;
+	xiugairiqi_flag=0;
+	
+	BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+	
+//	LCD_ShowNum2(60,60,calendar.w_year,4,24);		
+//	LCD_ShowNum2(201,60,calendar.w_date,2,24);	
+   LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+	LCD_ShowxNum(201,60,calendar.w_date,2,24,0x80);
+	
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);		
+//	LCD_ShowNum2(100,111,calendar.hour,2,24);	//Ê±·ÖÃë						  
+//	LCD_ShowNum2(141,111,calendar.min,2,24);									  
+//	LCD_ShowNum2(183,111,calendar.sec,2,24);	
+	LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+  LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+  LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);
+	POINT_COLOR=GBLUE;
+	
+  LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);
+
+  xiugaiyuefen_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+void xiugaishizhong_gairiqi()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÈÕÆÚ
+{	
+	xiugaiyuefen_flag=0;
+	xiugaishizhong_flag=0;
+	
+	BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+	
+	//LCD_ShowNum2(60,60,calendar.w_year,4,24);	
+	LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+ 
+	LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);		
+//	LCD_ShowNum2(100,111,calendar.hour,2,24);	//Ê±·ÖÃë						  
+//	LCD_ShowNum2(141,111,calendar.min,2,24);									  
+//	LCD_ShowNum2(183,111,calendar.sec,2,24);	
+	LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+  LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+  LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);
+	POINT_COLOR=GBLUE;
+	LCD_ShowNum2(201,60,calendar.w_date,2,24);	
+
+  xiugairiqi_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+void xiugaishizhong_gaishi()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÊ±
+{
+	xiugairiqi_flag=0;
+	xiugaifenzhong_flag=0;
+	
+	BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+	
+	//LCD_ShowNum2(60,60,calendar.w_year,4,24);	
+
+ // LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);	
+	//LCD_ShowNum2(201,60,calendar.w_date,2,24);	 
+	LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+  LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);	
+	LCD_ShowxNum(201,60,calendar.w_date,2,24,0x80);
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);							  
+//	LCD_ShowNum2(141,111,calendar.min,2,24);									  
+//	LCD_ShowNum2(183,111,calendar.sec,2,24);	
+  LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+  LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);
+	POINT_COLOR=GBLUE;
+//	LCD_ShowNum2(100,111,calendar.hour,2,24);	//Ê±·ÖÃë
+ LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+  xiugaishizhong_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+void xiugaishizhong_gaifen()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸Ä·Ö
+{
+	xiugaishizhong_flag=0;
+	xiugaimiao_flag=0;
+	
+	BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+	
+//	LCD_ShowNum2(60,60,calendar.w_year,4,24);				
+//	LCD_ShowNum2(201,60,calendar.w_date,2,24);	 
+	LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+  LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);	
+	LCD_ShowxNum(201,60,calendar.w_date,2,24,0x80);
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);		
+//	LCD_ShowNum2(100,111,calendar.hour,2,24);	//Ê±·ÖÃë						  								  
+//	LCD_ShowNum2(183,111,calendar.sec,2,24);	
+  LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+	LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);
+	POINT_COLOR=GBLUE;
+	//LCD_ShowNum2(141,111,calendar.min,2,24);	
+LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+  xiugaifenzhong_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+void xiugaishizhong_gaimiao()//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÃë
+{
+	xiugainianfen_flag=0;
+	xiugaifenzhong_flag=0;
+	
+	BACK_COLOR=BLACK;
+	POINT_COLOR=WHITE;
+	LCD_ShowChinese32x32(114,60,17,24,WHITE); //ÄêÔÂÈÕ
+	LCD_ShowChinese32x32(174,60,18,24,WHITE);
+	LCD_ShowChinese32x32(230,60,19,24,WHITE);
+	
+	//LCD_ShowNum2(60,60,calendar.w_year,4,24);		
+	LCD_ShowxNum(60,60,calendar.w_year,4,24,0x80);
+  LCD_ShowxNum(147,60,calendar.w_month,2,24,0x80);	
+	LCD_ShowxNum(194,60,calendar.w_date,2,24,0x80);
+
+//	LCD_ShowNum2(201,60,calendar.w_date,2,24);	 
+	
+	LCD_ShowChar2(126,111,':',24,0);			
+	LCD_ShowChar2(167,111,':',24,0);		
+//	LCD_ShowNum2(100,111,calendar.hour,2,24);	//Ê±·ÖÃë						  
+//	LCD_ShowNum2(141,111,calendar.min,2,24);									  
+  LCD_ShowxNum(100,111,calendar.hour,2,24,0x80);
+	LCD_ShowxNum(141,111,calendar.min,2,24,0x80);
+	POINT_COLOR=GBLUE;
+	//LCD_ShowNum2(183,111,calendar.sec,2,24);	
+
+  LCD_ShowxNum(183,111,calendar.sec,2,24,0x80);
+  xiugaimiao_flag=1;
+	sure_gaishijianwancheng_flag=1;
+}
+ int main(void)
+ {	
+	vu8 key=0;	
+	delay_init();	    	 //ÑÓÊ±º¯Êý³õÊ¼»¯	  
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); //ÉèÖÃNVICÖÐ¶Ï·Ö×é2:2Î»ÇÀÕ¼ÓÅÏÈ¼¶£¬2Î»ÏìÓ¦ÓÅÏÈ¼¶
+  RTC_Init();	  			//RTC³õÊ¼»¯
+	Lcd_Init();			//³õÊ¼»¯OLED  
+  KEY_Init(); 
+	BEEP_Init(); 
+	usart2_init(115200);
+	USART2_RX_STA=0;
+	LCD_Clear(BLACK); //ÇåÆÁ
+	//BACK_COLOR=BLACK ;
+	POINT_COLOR=GRED; 
+	xianshiwendu_kandianya();//ÏÔÊ¾ÎÂ¶È½çÃæ_²é¿´µçÑ¹
+	while(1)
+	{ 		
+		xianshiriqi();
+		if((USART2_RX_STA&0X8000)&&jieshouwendu_flag == 1)			//½ÓÊÕµ½ÎÂ¶È
+		{
+	     	if(USART2_RX_BUF[0]==0xAA)
+				{
+					if(USART2_RX_BUF[1]==0x72)//ÅÐ¶ÏÊý¾ÝÊÇ·ñÀ´×ÔÖ÷ÎÔ
+					{
+					  if(USART2_RX_BUF[2]==0x08)
+						{	
+								 xianshizhuwo_08_346();
+							 
+//							if((USART2_RX_BUF[7]==0x31)&&(USART2_RX_BUF[8]==0x34))
+//							{
+//								BEEP=1;
+//							}
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshizhuwo_07_35();
+			  	  }	
+					}
+					if(USART2_RX_BUF[1]==0x48)//ÅÐ¶ÏÊý¾ÝÊÇ·ñÀ´×Ô´ÎÎÔ
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshiciwo_08_346();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshiciwo_07_35();
+			  	  }	
+					}
+					if(USART2_RX_BUF[1]==0x4E)//ÅÐ¶ÏÊý¾ÝÊÇ·ñÀ´×ÔÊé·¿
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshishufang_08_346();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishufang_07_35();
+			  	  }	
+					}
+					if(USART2_RX_BUF[1]==0xC6)//ÅÐ¶ÏÊý¾ÝÊÇ·ñÀ´×ÔÊÒÍâ
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{		
+							if((USART2_RX_BUF[3]!=8)&&(USART2_RX_BUF[4]!=5)&&(USART2_RX_BUF[6]!=0))
+							{
+			      	xianshishiwai_08_346();
+							}
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishiwai_07_35();
+			  	  }	
+					}
+			 }
+			 if(USART2_RX_BUF[0]==0x72)//Ö÷ÎÔ
+			 {
+				 	if(USART2_RX_BUF[1]==0x72)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshizhuwo_08_346();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshizhuwo_07_35();
+			  	  }	
+					}
+					if(USART2_RX_BUF[1]==0x08)
+					{					
+						xianshizhuwo_08_235();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshizhuwo_07_24();
+					}
+			 }
+			 if(USART2_RX_BUF[0]==0x48)//´ÎÎÔ
+			 {
+					if(USART2_RX_BUF[1]==0x48)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshiciwo_08_346();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshiciwo_07_35();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshiciwo_08_235();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshiciwo_07_24();
+					}					
+			 }
+			 if(USART2_RX_BUF[0]==0x4E)//Êé·¿
+			 {
+					if(USART2_RX_BUF[1]==0x4E)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshishufang_08_346();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishufang_07_35();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshishufang_08_235();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshishufang_07_24();
+					}					
+			 }
+			 if(USART2_RX_BUF[0]==0xC6)//ÊÒÍâ
+			 {
+					if(USART2_RX_BUF[1]==0x22)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{		
+            if((USART2_RX_BUF[3]!=8)&&(USART2_RX_BUF[4]!=5)&&(USART2_RX_BUF[6]!=0))
+
+							{
+			      	xianshishiwai_08_346();
+							}
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishiwai_07_35();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+//						if((USART2_RX_BUF[3]!=8)&&(USART2_RX_BUF[4]!=5)&&(USART2_RX_BUF[6]!=0))
+//						{
+						xianshishiwai_08_235();
+				//		}
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshishiwai_07_24();
+					}					
+			 }
+		}	 		
+		if((USART2_RX_STA&0X8000)&&jieshoudianya_flag == 1)			//½ÓÊÕµ½µçÑ¹
+		{
+			if(USART2_RX_BUF[0]==0xAA)
+			{
+	     	if(USART2_RX_BUF[1]==0x72)
+				{					
+						if(USART2_RX_BUF[2]==0x08)
+						{					
+							xianshizhuwo_08_78();	
+						}
+						if(USART2_RX_BUF[2]==0x07)
+						{				
+							xianshizhuwo_07_67();						
+						}
+					else{USART2_RX_STA=0;}
+				}
+			  if(USART2_RX_BUF[1]==0x4E)
+				{
+						if(USART2_RX_BUF[2]==0x08)
+						{	
+							xianshishufang_08_78();
+					  }
+						if(USART2_RX_BUF[2]==0x07)
+						{		
+							xianshishufang_07_67();
+						}
+						else{USART2_RX_STA=0;}
+				}
+				if(USART2_RX_BUF[1]==0x48)
+				{
+						if(USART2_RX_BUF[2]==0x08)
+						{				
+							xianshiciwo_08_78();
+						}
+						if(USART2_RX_BUF[2]==0x07)
+						{				
+							xianshiciwo_07_67();						
+						}
+					else{USART2_RX_STA=0;}
+				}
+				if(USART2_RX_BUF[1]==0xC6)
+				{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+							xianshishiwai_08_78();
+						}
+						if(USART2_RX_BUF[2]==0x07)
+						{	
+							xianshishiwai_07_67();
+						}
+						else{USART2_RX_STA=0;}
+				}
+			}
+			 if(USART2_RX_BUF[0]==0x72)//Ö÷ÎÔ
+			 {
+				 	if(USART2_RX_BUF[1]==0x72)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshizhuwo_08_78();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshizhuwo_07_67();
+			  	  }	
+					}
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshizhuwo_08_78();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshizhuwo_07_67();
+					}
+			 }
+			 if(USART2_RX_BUF[0]==0x48)//´ÎÎÔ
+			 {
+					if(USART2_RX_BUF[1]==0x48)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshiciwo_08_78();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshiciwo_07_67();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshiciwo_08_78();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshiciwo_07_67();
+					}					
+			 }
+			 if(USART2_RX_BUF[0]==0x4E)//Êé·¿
+			 {
+					if(USART2_RX_BUF[1]==0x4E)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshishufang_08_78();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishufang_07_67();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshishufang_08_78();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshishufang_07_67();
+					}					
+			 }
+			 if(USART2_RX_BUF[0]==0xC6)//ÊÒÍâ
+			 {
+					if(USART2_RX_BUF[1]==0x22)
+					{
+						if(USART2_RX_BUF[2]==0x08)
+						{			
+			      	xianshishiwai_08_78();
+			  	  }	
+						if(USART2_RX_BUF[2]==0x07)
+						{			
+					    xianshishiwai_07_67();
+			  	  }	
+					}		
+					if(USART2_RX_BUF[1]==0x08)
+					{
+						xianshishiwai_08_78();
+					}
+					if(USART2_RX_BUF[1]==0x07)
+					{
+						xianshishiwai_07_67();
+					}					
+			 }
+		}	 		
+		
+		
+		key=KEY_Scan(0);	//µÃµ½¼üÖµ
+			{
+				
+			 if(KEY2==0&&(sure_xiugaishijian_flag==1))
+		   {
+			   LCD_Clear(BLACK); 
+				// LCD_Fill(0,0,320,450,BLACK);
+				 //BACK_COLOR=BLACK;
+			   xiugaishizhong_gainianfen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if((KEY2==0&&(sure_gaishijianwancheng_flag==1))||(KEY0==0))
+		   {
+			   LCD_Clear(BLACK); 
+				 //LCD_Fill(0,0,320,450,BLACK);
+				// BACK_COLOR=BLACK;
+			   xianshiwendu_kandianya();//ÏÔÊ¾ÎÂ¶È½çÃæ_²é¿´µçÑ¹
+				 xianshiriqi() ;
+		   }
+			 if(KEY2==0&&(sure_wendukandianya_flag==1))
+		   {
+				 sure_wendukandianya_flag=0;
+	       // LCD_Clear(BLACK); 
+		      LCD_Fill(65,36,140,75,BLACK);//zhuwo
+				  LCD_Fill(220,36,300,75,BLACK);//shufang
+				  LCD_Fill(65,106,140,145,BLACK);//ciwo
+				  LCD_Fill(220,106,300,145,BLACK);
+			   xianshidianya_kanwendu();//ÏÔÊ¾µçÑ¹½çÃæ_²é¿´ÎÂ¶È
+				 xianshiriqi() ;
+		   }
+			 if((KEY2==0&&(sure_dianyakanwendu_flag==1))||(KEY0==0))
+		   {
+         sure_dianyakanwendu_flag=0;
+        // LCD_Clear(BLACK); 
+				 LCD_Fill(75,36,133,36,BLACK);
+			   xianshiwendu_kandianya();//ÏÔÊ¾ÎÂ¶È½çÃæ_²é¿´µçÑ¹
+				 xianshiriqi(); 
+		   }
+			 
+			 
+			 
+			 if(KEY1==0&&wendu_dianyadaoshijian_flag==1)
+		   {
+         xianshiwendu_gaishizhong();//ÏÔÊ¾ÎÂ¶È_¸ÄÊ±ÖÓ
+				 xianshiriqi();
+		   }
+			 if(KEY1==0&&wendu_shijiandaodianya_flag==1)
+		   {
+         xianshiwendu_kandianya();//ÏÔÊ¾ÎÂ¶È_¸ÄÊ±ÖÓ
+				 xianshiriqi();
+		   }
+			 if(KEY1==0&&xiugainianfen_flag==1)
+		   {
+				 delay_ms(10);	
+				 calendar.w_year+=1;
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gainianfen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if(KEY1==0&&xiugaiyuefen_flag==1)
+		   {
+				 delay_ms(10);	
+				 calendar.w_month+=1;
+				 if(calendar.w_month>=13)
+				 {
+					 calendar.w_month=1;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaiyuefen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if(KEY1==0&&xiugairiqi_flag==1)
+		   {
+				 delay_ms(10);	
+				 calendar.w_date+=1;
+				 if(calendar.w_month==1||calendar.w_month==3||calendar.w_month==5||calendar.w_month==7||calendar.w_month==8||calendar.w_month==10||calendar.w_month==12)
+				 {
+						if(calendar.w_date>31)
+						{
+							calendar.w_date=1;
+						}
+			   }
+				 else if(calendar.w_month==4||calendar.w_month==6||calendar.w_month==9||calendar.w_month==11)
+				 {
+					 	if(calendar.w_date>30)
+						{
+							calendar.w_date=1;
+						}
+				 }
+				 else if(calendar.w_month==2)
+				 {
+					 	if(calendar.w_date>28)
+						{
+							calendar.w_date=1;
+						}
+				 } 
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gairiqi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if(KEY1==0&&xiugaishizhong_flag==1)
+		   {
+				delay_ms(10);	
+				 calendar.hour+=1;
+				 if(calendar.hour>23)
+				 {
+					 calendar.hour=0;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaishi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if(KEY1==0&&xiugaifenzhong_flag==1)
+		   {
+				 delay_ms(10);	
+				 calendar.min+=1;
+				 if(calendar.min>59)
+				 {
+					 calendar.min=0;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaifen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 if(KEY1==0&&xiugaimiao_flag==1)
+		   {
+				delay_ms(10);	
+				 calendar.sec+=1;
+				 if(calendar.sec>59)
+				 {
+					 calendar.sec=0;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaimiao();//ÐÞ¸ÄÊ±ÖÓ½çÃæ
+		   }
+			 
+			 
+			 
+			 
+			 if(KEY4==0&&wendu_shijiandaodianya_flag==1)
+		   {
+				 wendu_shijiandaodianya_flag = 0;
+         xianshiwendu_kandianya();//ÏÔÊ¾ÎÂ¶È½çÃæ_²é¿´µçÑ¹
+			   xianshiriqi() ;
+		   }
+			 if(KEY4==0&&wendu_dianyadaoshijian_flag==1)
+		   {
+         xianshiwendu_gaishizhong();//ÏÔÊ¾µçÑ¹½çÃæ_²é¿´ÎÂ¶È
+				 xianshiriqi() ;
+		   }
+			 if(KEY4==0&&xiugainianfen_flag==1)
+		   {
+         //delay_ms(10);	
+				 calendar.w_year-=1;
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gainianfen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÄê·Ý
+		   }
+			 	if(KEY4==0&&xiugaiyuefen_flag==1)
+		   {
+         delay_us(10);	
+				 calendar.w_month-=1;
+				 if(calendar.w_month<1)
+				 {
+					 calendar.w_month=12;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaiyuefen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÔÂ·Ý
+		   }
+			 	if(KEY4==0&&xiugairiqi_flag==1)
+		   {
+         delay_ms(10);	
+				 calendar.w_date-=1;
+				 if(calendar.w_month==1||calendar.w_month==3||calendar.w_month==5||calendar.w_month==7||calendar.w_month==8||calendar.w_month==10||calendar.w_month==12)
+				 {
+						if(calendar.w_date<1)
+						{
+							calendar.w_date=31;
+						}
+			   }
+				 else if(calendar.w_month==4||calendar.w_month==6||calendar.w_month==9||calendar.w_month==11)
+				 {
+					 	if(calendar.w_date<1)
+						{
+							calendar.w_date=30;
+						}
+				 }
+				 else if(calendar.w_month==2)
+				 {
+					 	if(calendar.w_date<1)
+						{
+							calendar.w_date=28;
+						}
+				 } 
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gairiqi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÈÕÆÚ
+		   }
+			  if(KEY4==0&&xiugaishizhong_flag==1)
+		   {
+         delay_ms(10);	
+				 calendar.hour-=1;
+				 if(calendar.hour<0)
+				 {
+					 calendar.hour=23;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaishi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÊ±ÖÓ
+		   }
+			 	if(KEY4==0&&xiugaifenzhong_flag==1)
+		   {
+         delay_ms(10);	
+				 calendar.min-=1;
+				 if(calendar.min<0)
+				 {
+					 calendar.min=59;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaifen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸Ä·ÖÖÓ
+		   }
+			 	if(KEY4==0&&xiugaimiao_flag==1)
+		   {
+         delay_ms(10);	
+				 calendar.sec-=1;
+				 if(calendar.sec<0)
+				 {
+					 calendar.sec=59;
+				 }
+				 RTC_Set(calendar.w_year,calendar.w_month,calendar.w_date,calendar.hour,calendar.min,calendar.sec);
+         xiugaishizhong_gaimiao();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÃë
+		   }
+			 
+			 
+			 
+			 	if(KEY5==0&&xiugainianfen_flag==1)
+		   {
+         xiugaishizhong_gaiyuefen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÔÂ·Ý
+
+		   }
+			 	if(KEY5==0&&xiugaiyuefen_flag==1)
+			 {
+				 xiugaishizhong_gairiqi();
+			 }
+			 	if(KEY5==0&&xiugairiqi_flag==1)
+			 {
+				 xiugaishizhong_gaishi();
+			 }
+			 	if(KEY5==0&&xiugaishizhong_flag==1)
+			 {
+				 xiugaishizhong_gaifen();
+			 }
+			 	if(KEY5==0&&xiugaifenzhong_flag==1)
+			 {
+				 xiugaishizhong_gaimiao();
+			 }
+			 	if(KEY5==0&&xiugaimiao_flag==1)
+			 {
+				 xiugaishizhong_gainianfen();
+			 }
+			  if(KEY3==0&&xiugaiyuefen_flag==1)
+			 {
+				 xiugaishizhong_gainianfen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÄê·Ý
+			 }
+			  if(KEY3==0&&xiugairiqi_flag==1)
+			 {
+				 xiugaishizhong_gaiyuefen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÔÂ·Ý
+			 }
+			 	if(KEY3==0&&xiugaishizhong_flag==1)
+			 {
+				 xiugaishizhong_gairiqi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÈÕÆÚ
+			 }
+			 	if(KEY3==0&&xiugaifenzhong_flag==1)
+			 {
+				 xiugaishizhong_gaishi();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÊ±ÖÓ
+			 }
+			 	if(KEY3==0&&xiugaimiao_flag==1)
+			 {
+				 xiugaishizhong_gaifen();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸Ä·ÖÖÓ
+			 }
+			 	if(KEY3==0&&xiugainianfen_flag==1)
+			 {
+				 xiugaishizhong_gaimiao();//ÐÞ¸ÄÊ±ÖÓ½çÃæ_¸ÄÃë
+			 }
+	  	delay_ms(10);	
+		 }
+	}
+}
